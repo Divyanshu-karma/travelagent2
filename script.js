@@ -29,6 +29,7 @@ async function sendMessage() {
     try {
       data = JSON.parse(rawText);
     } catch {
+      console.error("RAW RESPONSE:", rawText);
       throw new Error(rawText || "Invalid JSON from server");
     }
 
