@@ -70,7 +70,7 @@ async function sendMessage() {
   const loading = addMessage("Typing...", "bot");
 
   try {
-    const response = await fetch("http://localhost:7071/api/chat", {
+    const response = await fetch("https://fuctiondk-cpcvdre2g8aje9ev.eastus-01.azurewebsites.net/api/chat", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
