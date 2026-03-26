@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Margie · Travel AI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+<div class="layout">
+
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-avatar">✦</div>
+      <div>
+        <h2>MARGIE</h2>
+        <p class="muted">travel · ai</p>
+      </div>
+    </div>
+    <button class="new-chat" type="button">＋ New Journey</button>
+    <div class="history">
+      <p class="history-title">Recent</p>
+      <ul>
+        <li class="history-item" tabindex="0">✈ Paris trip</li>
+        <li class="history-item" tabindex="0">🪷 India tourism</li>
+      </ul>
+    </div>
+    <div class="sidebar-footer"><span>v2.0</span><span>Powered by AI</span></div>
+  </aside>
+
+  <main class="main">
+    <header class="top">
+      <div>
+        <h1>Where to next? <span class="gold">✦</span></h1>
+        <p>Your intelligent travel companion</p>
+      </div>
+      <div class="status"><span class="dot-pulse"></span>Online</div>
+    </header>
+
+    <section id="chat" class="chat" aria-live="polite">
+      <div class="welcome">
+        <div class="welcome-icon">🌍</div>
+        <h3>Ask me anything about travel</h3>
+        <p>Destinations · Itineraries · Tips · Culture · Food</p>
+        <div class="chips">
+          <span class="chip">Best beaches in Asia</span>
+          <span class="chip">Europe on a budget</span>
+          <span class="chip">Hidden gems in India</span>
+        </div>
+      </div>
+    </section>
+
+    <form class="input-area" id="chatForm">
+      <div class="input-wrap">
+        <textarea id="message" rows="1" placeholder="Ask about destinations, food, travel tips..." autocomplete="off"></textarea>
+        <button id="sendBtn" class="send-btn" type="submit" aria-label="Send">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          <span class="send-text" style="display:none"></span>
+        </button>
+      </div>
+      <p class="hint"><span class="kbd">↵</span> send &nbsp;·&nbsp; <span class="kbd">⇧↵</span> newline</p>
+    </form>
+  </main>
+
+</div>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
