@@ -87,16 +87,20 @@ async function sendMessage() {
       throw new Error(rawText || "Invalid JSON from server");
     }
 
-    loading.remove();
+    if (loading && loading.remove) loading.remove();
 
     if (!response.ok) {
       throw new Error(data.error || rawText || response.statusText);
     }
 
-    addMessage(data.response ?? "No response returned", "bot");
+    if (data.response) {
+      addMessage(data.response, "bot");
+    } else {
+      addMessage("Error: " + (data.error || "No response returned"), "bot");
+    }
 
   } catch (error) {
-    loading.remove();
+    if (loading && loading.remove) loading.remove();
     addMessage("Error: " + error.message, "bot");
   } finally {
     sendBtn.disabled = false;
