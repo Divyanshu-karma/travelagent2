@@ -1,3 +1,5 @@
+let messageHistory = [];
+
 async function sendMessage() {
   const input = document.getElementById("message");
   const chat = document.getElementById("chat");
@@ -20,7 +22,10 @@ async function sendMessage() {
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ message: userText })
+      body: JSON.stringify({
+        message: userText,
+        history: messageHistory
+      })
     });
 
     const rawText = await response.text();
@@ -41,6 +46,9 @@ async function sendMessage() {
 
     if (data.response) {
       addMessage(data.response, "bot");
+      // Update history for context awareness
+      messageHistory.push({ role: "user", content: userText });
+      messageHistory.push({ role: "assistant", content: data.response });
     } else {
       addMessage("Error: " + (data.error || "No response returned"), "bot");
     }
@@ -53,203 +61,138 @@ async function sendMessage() {
     input.focus();
   }
 }
-  
-  // function addMessage(text, sender) {
-  //   const chat = document.getElementById("chat");
-  
-  //   const msg = document.createElement("div");
-  //   msg.className = "message " + sender;
-  
-  //   const avatar = document.createElement("div");
-  //   avatar.className = "avatar";
-  //   avatar.textContent = sender === "user" ? "🧳" : "✨";
-  
-  //   const bubble = document.createElement("div");
-  //   bubble.className = "bubble";
-  
-  //   // meta row
-  //   const meta = document.createElement("div");
-  //   meta.className = "meta-row";
-  
-  //   const senderLabel = document.createElement("div");
-  //   senderLabel.className = "sender";
-  //   senderLabel.textContent = sender === "user" ? "You" : "Margie";
-  
-  //   const time = document.createElement("div");
-  //   time.className = "time";
-  //   time.textContent = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-  
-  //   meta.appendChild(senderLabel);
-  //   meta.appendChild(time);
-  
-  //   // copy button for bot
-  //   const copyBtn = document.createElement("button");
-  //   copyBtn.className = "copy-btn";
-  //   copyBtn.type = "button";
-  //   copyBtn.textContent = "Copy";
-  
-  //   if (sender === "bot") {
-  //     // place copy button inside bubble header area (right side)
-  //     meta.appendChild(copyBtn);
-  //     copyBtn.addEventListener("click", async () => {
-  //       try {
-  //         await navigator.clipboard.writeText(text);
-  //         copyBtn.textContent = "Copied!";
-  //         setTimeout(() => (copyBtn.textContent = "Copy"), 1200);
-  //       } catch (e) {
-  //         copyBtn.textContent = "Can't copy";
-  //         setTimeout(() => (copyBtn.textContent = "Copy"), 1200);
-  //       }
-  //     });
-  //   }
-  
-  //   // content
-  //   const contentWrap = document.createElement("div");
-  //   contentWrap.className = "content";
-  
-  //   if (sender === "bot" && text === "Typing...") {
-  //     const typing = document.createElement("div");
-  //     typing.className = "typing";
-  //     typing.setAttribute("aria-label", "Bot is typing");
-  
-  //     const d1 = document.createElement("span");
-  //     d1.className = "dot";
-  //     const d2 = document.createElement("span");
-  //     d2.className = "dot";
-  //     const d3 = document.createElement("span");
-  //     d3.className = "dot";
-  
-  //     typing.appendChild(d1);
-  //     typing.appendChild(d2);
-  //     typing.appendChild(d3);
-  //     contentWrap.appendChild(typing);
-  //   } else {
-  //     contentWrap.innerText = text;
-  //   }
-  
-  //   bubble.appendChild(meta);
-  //   bubble.appendChild(contentWrap);
-  
-  //   msg.appendChild(avatar);
-  //   msg.appendChild(bubble);
-  
-  //   chat.appendChild(msg);
-  //   chat.scrollTop = chat.scrollHeight;
-  
-  //   return msg;
-  // }
-  function addMessage(text, sender) {
-    const chat = document.getElementById("chat");
-  
-    const msg = document.createElement("div");
-    msg.className = "message " + sender;
-  
-    const avatar = document.createElement("div");
-    avatar.className = "avatar";
-    avatar.textContent = sender === "user" ? "🧳" : "✨";
-  
-    const bubble = document.createElement("div");
-    bubble.className = "bubble";
-  
-    const meta = document.createElement("div");
-    meta.className = "meta-row";
-  
-    const senderLabel = document.createElement("div");
-    senderLabel.className = "sender";
-    senderLabel.textContent = sender === "user" ? "You" : "Margie";
-  
-    const time = document.createElement("div");
-    time.className = "time";
-    time.textContent = new Date().toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit"
-    });
-  
-    meta.appendChild(senderLabel);
-    meta.appendChild(time);
-  
-    const copyBtn = document.createElement("button");
-    copyBtn.className = "copy-btn";
-    copyBtn.type = "button";
-    copyBtn.textContent = "Copy";
-  
-    if (sender === "bot") {
-      meta.appendChild(copyBtn);
-  
-      copyBtn.addEventListener("click", async () => {
-        try {
-          await navigator.clipboard.writeText(text);
-          copyBtn.textContent = "Copied!";
-          setTimeout(() => (copyBtn.textContent = "Copy"), 1200);
-        } catch (e) {
-          copyBtn.textContent = "Can't copy";
-          setTimeout(() => (copyBtn.textContent = "Copy"), 1200);
-        }
-      });
-    }
-  
-    const contentWrap = document.createElement("div");
-    contentWrap.className = "content";
-  
-    if (sender === "bot" && text === "Typing...") {
-      const typing = document.createElement("div");
-      typing.className = "typing";
-      typing.setAttribute("aria-label", "Bot is typing");
-  
-      const d1 = document.createElement("span");
-      d1.className = "dot";
-      const d2 = document.createElement("span");
-      d2.className = "dot";
-      const d3 = document.createElement("span");
-      d3.className = "dot";
-  
-      typing.appendChild(d1);
-      typing.appendChild(d2);
-      typing.appendChild(d3);
-      contentWrap.appendChild(typing);
-    } else if (sender === "bot") {
-      const rawHtml = marked.parse(text);
-      contentWrap.innerHTML = DOMPurify.sanitize(rawHtml);
-    } else {
-      contentWrap.textContent = text;
-    }
-  
-    bubble.appendChild(meta);
-    bubble.appendChild(contentWrap);
-  
-    msg.appendChild(avatar);
-    msg.appendChild(bubble);
-  
-    chat.appendChild(msg);
-    chat.scrollTop = chat.scrollHeight;
-  
-    return msg;
-  }
-  function autosizeTextarea(el) {
-    el.style.height = "auto";
-    el.style.height = Math.min(el.scrollHeight, 140) + "px";
-  }
-  
-  document.addEventListener("DOMContentLoaded", () => {
-    const input = document.getElementById("message");
-    const form = document.getElementById("chatForm");
-  
-    // Enter to send, Shift+Enter newline
-    input.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" && !e.shiftKey) {
-        e.preventDefault();
-        sendMessage();
+
+function addMessage(text, sender) {
+  const chat = document.getElementById("chat");
+
+  const msg = document.createElement("div");
+  msg.className = "message " + sender;
+
+  const avatar = document.createElement("div");
+  avatar.className = "avatar";
+  avatar.textContent = sender === "user" ? "🧳" : "✨";
+
+  const bubble = document.createElement("div");
+  bubble.className = "bubble";
+
+  const meta = document.createElement("div");
+  meta.className = "meta-row";
+
+  const senderLabel = document.createElement("div");
+  senderLabel.className = "sender";
+  senderLabel.textContent = sender === "user" ? "You" : "Margie";
+
+  const time = document.createElement("div");
+  time.className = "time";
+  time.textContent = new Date().toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+
+  meta.appendChild(senderLabel);
+  meta.appendChild(time);
+
+  const copyBtn = document.createElement("button");
+  copyBtn.className = "copy-btn";
+  copyBtn.type = "button";
+  copyBtn.textContent = "Copy";
+
+  if (sender === "bot") {
+    meta.appendChild(copyBtn);
+
+    copyBtn.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(text);
+        copyBtn.textContent = "Copied!";
+        setTimeout(() => (copyBtn.textContent = "Copy"), 1200);
+      } catch (e) {
+        copyBtn.textContent = "Can't copy";
+        setTimeout(() => (copyBtn.textContent = "Copy"), 1200);
       }
     });
-  
-    // Submit handler
-    form.addEventListener("submit", (e) => {
+  }
+
+  const contentWrap = document.createElement("div");
+  contentWrap.className = "content";
+
+  if (sender === "bot" && text === "Typing...") {
+    const typing = document.createElement("div");
+    typing.className = "typing";
+    typing.setAttribute("aria-label", "Bot is typing");
+
+    const d1 = document.createElement("span");
+    d1.className = "dot";
+    const d2 = document.createElement("span");
+    d2.className = "dot";
+    const d3 = document.createElement("span");
+    d3.className = "dot";
+
+    typing.appendChild(d1);
+    typing.appendChild(d2);
+    typing.appendChild(d3);
+    contentWrap.appendChild(typing);
+  } else if (sender === "bot") {
+    const rawHtml = marked.parse(text);
+    contentWrap.innerHTML = DOMPurify.sanitize(rawHtml);
+  } else {
+    contentWrap.textContent = text;
+  }
+
+  bubble.appendChild(meta);
+  bubble.appendChild(contentWrap);
+
+  msg.appendChild(avatar);
+  msg.appendChild(bubble);
+
+  chat.appendChild(msg);
+  chat.scrollTop = chat.scrollHeight;
+
+  return msg;
+}
+
+function autosizeTextarea(el) {
+  el.style.height = "auto";
+  el.style.height = Math.min(el.scrollHeight, 140) + "px";
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const input = document.getElementById("message");
+  const form = document.getElementById("chatForm");
+
+  // Enter to send, Shift+Enter newline
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       sendMessage();
-    });
-  
-    // Auto-grow textarea
-    input.addEventListener("input", () => autosizeTextarea(input));
-  
-    autosizeTextarea(input);
+    }
   });
+
+  // Submit handler
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    sendMessage();
+  });
+
+  // Auto-grow textarea
+  input.addEventListener("input", () => autosizeTextarea(input));
+
+  autosizeTextarea(input);
+
+  // New Journey / Clear History
+  const newChatBtn = document.querySelector(".new-chat");
+  if (newChatBtn) {
+    newChatBtn.addEventListener("click", () => {
+      messageHistory = [];
+      const chatContainer = document.getElementById("chat");
+
+      // Keep only the welcome section
+      const welcome = chatContainer.querySelector(".welcome");
+      chatContainer.innerHTML = "";
+      if (welcome) {
+        chatContainer.appendChild(welcome);
+      }
+
+      addMessage("New context started. How can I help you today?", "bot");
+    });
+  }
+});
